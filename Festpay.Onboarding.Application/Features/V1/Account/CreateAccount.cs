@@ -74,7 +74,7 @@ public sealed class CreateAccountCommandHandler(FestpayContext dbContext) : IReq
     }
 }
 
-internal sealed class CreateAccountCommandEndpoint : ICarterModule
+public sealed class CreateAccountCommandEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
