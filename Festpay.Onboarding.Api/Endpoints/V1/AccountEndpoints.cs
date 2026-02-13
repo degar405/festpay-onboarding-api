@@ -21,9 +21,9 @@ namespace Festpay.Onboarding.Api.Endpoints.V1
             .WithTags(SwaggerTagsConstants.Account);
 
             app.MapPatch($"{EndpointConstants.V1}{EndpointConstants.Account}/{{id:guid}}",
-                async ([FromServices] ISender sender, [FromRoute] Guid id) =>
+                async ([FromServices] ISender sender, [FromRoute] Guid id, [FromQuery] bool? deactivateIntention) =>
                 {
-                    var command = new ChangeAccountStatusCommand(id, null);
+                    var command = new ChangeAccountStatusCommand(id, deactivateIntention);
                     await sender.Send(command);
                     return Result.Ok(null);
                 }
