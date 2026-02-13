@@ -56,6 +56,36 @@ namespace Festpay.Onboarding.Infra.Migrations
 
                     b.ToTable("Accounts");
                 });
+
+            modelBuilder.Entity("Festpay.Onboarding.Domain.Entities.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeactivatedUtc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("DestinationAccountID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("SourceAccountID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Transactions");
+                });
 #pragma warning restore 612, 618
         }
     }

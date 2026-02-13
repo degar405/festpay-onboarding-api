@@ -9,15 +9,13 @@ namespace Festpay.Onboarding.Infra;
 
 public static class DependencyInjection
 {
-    public static void AddDatabase(this IServiceCollection services)
+    public static void AddDatabase(this IServiceCollection services, IConfiguration config)
     {
-        services.AddDbContext<FestpayContext>();
-        services.AddScoped(_ => new FestpayContextFactory().CreateDbContext());
-
-        using var serviceProvider = services.BuildServiceProvider();
-        using var context = serviceProvider.GetService<FestpayContext>();
-
-        context?.Database.Migrate();
+        services.AddDbContext<FestpayContext>(options =>
+            options
+                .UseSqlite(config.GetConnectionString("DefaultConnection"))
+                .EnableSensitiveDataLogging(false)
+                .EnableDetailedErrors(false));
     }
 
     public static void AddSwagger(this IServiceCollection services, IConfiguration config)

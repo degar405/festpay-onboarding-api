@@ -63,3 +63,16 @@ public class InvalidHourlyRateException(decimal hourlyRate)
 {
     public decimal HourlyRate { get; } = hourlyRate;
 }
+
+public class NumericalValueLessThanMinException(string field, string comparisonValue) 
+    : DomainException(
+        $"Value should be more than {comparisonValue}.", 
+        field
+    )
+{
+    public string ComparisonValue { get; } = comparisonValue;
+}
+
+public class TransactionDestinedToSourceAccountException()
+    : DomainException("Transactions must be from an account to another.")
+{ }

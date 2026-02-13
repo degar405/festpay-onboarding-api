@@ -1,9 +1,9 @@
-
-
 using Carter;
 using Festpay.Onboarding.Api.Middlewares;
 using Festpay.Onboarding.Application.Modules;
 using Festpay.Onboarding.Infra;
+using Festpay.Onboarding.Infra.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +34,13 @@ builder.Services.AddProblemDetails();
 builder.Services.AddCarter();
 
 AppModules.AddApplication(builder.Services);
-builder.Services.AddDatabase();
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddSwagger(builder.Configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+    scope.ServiceProvider.GetRequiredService<FestpayContext>().Database.Migrate();
 
 app.UseCors("AllowAllOrigins");
 app.UseSession();

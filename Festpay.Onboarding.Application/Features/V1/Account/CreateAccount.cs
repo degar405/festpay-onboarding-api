@@ -57,12 +57,12 @@ public sealed class CreateAccountCommandHandler(FestpayContext dbContext) : IReq
             throw new EntityAlreadyExistsException("Conta");
         }
 
-        var account = new Account.Builder()
-            .WithName(request.Name)
-            .WithDocument(request.Document)
-            .WithEmail(request.Email)
-            .WithPhone(request.Phone)
-            .Build();
+        var account = Account.Create(
+            request.Name,
+            request.Document,
+            request.Email,
+            request.Phone
+        );
 
         await dbContext.Accounts.AddAsync(account, cancellationToken);
         return await dbContext.SaveChangesAsync(cancellationToken) > 0;

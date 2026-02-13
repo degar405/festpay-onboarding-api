@@ -27,38 +27,17 @@ public class Account : EntityBase
             throw new InvalidPhoneNumberException(Phone);
     }
 
-    public class Builder
+    public static Account Create(string name, string document, string email, string phone)
     {
-        private readonly Account _account = new();
-
-        public Builder WithName(string name)
+        var account = new Account
         {
-            _account.Name = name;
-            return this;
-        }
+            Name = name,
+            Document = document,
+            Email = email,
+            Phone = phone
+        };
 
-        public Builder WithDocument(string document)
-        {
-            _account.Document = document;
-            return this;
-        }
-
-        public Builder WithEmail(string email)
-        {
-            _account.Email = email;
-            return this;
-        }
-
-        public Builder WithPhone(string phone)
-        {
-            _account.Phone = phone;
-            return this;
-        }
-
-        public Account Build()
-        {
-            _account.Validate();
-            return _account;
-        }
+        account.Validate();
+        return account;
     }
 }

@@ -1,6 +1,6 @@
 namespace Festpay.Onboarding.Domain.Entities;
 
-public class EntityBase
+public abstract class EntityBase
 {
     public Guid Id { get; }
     public DateTime CreatedUtc { get; } = DateTime.UtcNow;

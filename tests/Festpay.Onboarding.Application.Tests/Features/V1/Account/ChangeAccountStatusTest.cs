@@ -19,12 +19,12 @@ public class ChangeAccountStatusCommandHandlerTests
 
     private static Account CreateTestAccount()
     {
-        return new Account.Builder()
-            .WithName("Test Account")
-            .WithEmail("test@example.com")
-            .WithPhone("11999999999")
-            .WithDocument("12345678909")
-            .Build();
+        return Account.Create(
+            "Test Account",
+            "12345678909",
+            "test@example.com",
+            "11999999999"
+        );
     }
 
     [Fact]

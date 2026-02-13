@@ -8,12 +8,12 @@ public class AccountTests
     [Fact]
     public void Should_Create_Account_When_Data_Is_Valid()
     {
-        var account = new Account.Builder()
-            .WithName("John Doe")
-            .WithDocument("16670073607")
-            .WithEmail("john.doe@example.com")
-            .WithPhone("11999999999")
-            .Build();
+        var account = Account.Create(
+            "John Doe",
+            "16670073607",
+            "john.doe@example.com",
+            "11999999999"
+        );
 
         Assert.Equal("John Doe", account.Name);
         Assert.Equal("16670073607", account.Document);
@@ -26,12 +26,12 @@ public class AccountTests
     {
         var exception = Assert.Throws<RequiredFieldException>(
             () =>
-                new Account.Builder()
-                    .WithName("")
-                    .WithDocument("16670073607")
-                    .WithEmail("john.doe@example.com")
-                    .WithPhone("11999999999")
-                    .Build()
+                Account.Create(
+                    "",
+                    "16670073607",
+                    "john.doe@example.com",
+                    "11999999999"
+                )
         );
 
         Assert.Equal("Name", exception.FieldName);
@@ -44,12 +44,12 @@ public class AccountTests
 
         var exception = Assert.Throws<InvalidDocumentNumberException>(
             () =>
-                new Account.Builder()
-                    .WithName("John Doe")
-                    .WithDocument(invalidDocument)
-                    .WithEmail("john.doe@example.com")
-                    .WithPhone("11999999999")
-                    .Build()
+                Account.Create(
+                    "John Doe",
+                    invalidDocument,
+                    "john.doe@example.com",
+                    "11999999999"
+                )
         );
 
         Assert.Equal(invalidDocument, exception.Document);
@@ -62,12 +62,12 @@ public class AccountTests
 
         var exception = Assert.Throws<InvalidEmailFormatException>(
             () =>
-                new Account.Builder()
-                    .WithName("John Doe")
-                    .WithDocument("16670073607")
-                    .WithEmail(invalidEmail)
-                    .WithPhone("11999999999")
-                    .Build()
+                Account.Create(
+                    "John Doe",
+                    "16670073607",
+                    invalidEmail,
+                    "11999999999"
+                )
         );
 
         Assert.Equal(invalidEmail, exception.Email);
@@ -80,12 +80,12 @@ public class AccountTests
 
         var exception = Assert.Throws<InvalidPhoneNumberException>(
             () =>
-                new Account.Builder()
-                    .WithName("John Doe")
-                    .WithDocument("16670073607")
-                    .WithEmail("john.doe@example.com")
-                    .WithPhone(invalidPhone)
-                    .Build()
+                Account.Create(
+                    "John Doe",
+                    "16670073607",
+                    "john.doe@example.com",
+                    invalidPhone
+                )
         );
 
         Assert.Equal(invalidPhone, exception.Phone);
