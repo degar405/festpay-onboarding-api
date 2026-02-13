@@ -1,5 +1,5 @@
 using Festpay.Onboarding.Application.Common.Exceptions;
-using Festpay.Onboarding.Application.Features.V1;
+using Festpay.Onboarding.Application.Features.V1.Account.Commands;
 using Festpay.Onboarding.Domain.Entities;
 using Festpay.Onboarding.Infra.Context;
 using Microsoft.EntityFrameworkCore;
