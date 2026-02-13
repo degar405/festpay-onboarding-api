@@ -39,3 +39,9 @@ public class OperationAlreadyPerformedException(string entityName)
         string.Format(ErrorMessageConstants.OperationAlreadyPerformed, entityName)
     )
 { }
+
+public class InactiveEntityException(string entityName)
+    : ApplicationExceptions(
+        string.Format(ErrorMessageConstants.InativeEntityException, entityName)
+    )
+{ }

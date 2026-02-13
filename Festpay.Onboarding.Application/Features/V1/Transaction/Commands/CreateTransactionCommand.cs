@@ -48,6 +48,9 @@ public sealed class CreateTransactionCommandHandler(ITransactionRepository repos
         if (destinationAccount == null)
             throw new EntityDoesntExistException("Destination Account");
 
+        if (destinationAccount.DeactivatedUtc.HasValue || sourceAccount.DeactivatedUtc.HasValue)
+            throw new InactiveEntityException(nameof(Entities.Account));
+
         var transaction = Entities.Transaction.Create(
             request.SourceAccountID,
             request.DestinationAccountID,
