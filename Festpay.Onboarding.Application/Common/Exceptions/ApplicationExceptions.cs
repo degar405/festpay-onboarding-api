@@ -27,3 +27,9 @@ public class EntityAlreadyExistsException(string entityName)
         string.Format(ErrorMessageConstants.EntityAlreadyExists, entityName)
     )
 { }
+
+public class EntityDoesntExistException(string entityName)
+    : ApplicationExceptions(
+        string.Format(ErrorMessageConstants.EntityDoesntExist, entityName)
+    )
+{ }

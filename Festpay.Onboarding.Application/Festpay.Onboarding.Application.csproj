@@ -11,12 +11,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Festpay.Onboarding.Domain\Festpay.Onboarding.Domain.csproj" />
-    <ProjectReference Include="..\Festpay.Onboarding.Infra\Festpay.Onboarding.Infra.csproj" />
   </ItemGroup>
 
 </Project>

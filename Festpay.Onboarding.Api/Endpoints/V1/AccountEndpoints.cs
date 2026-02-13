@@ -1,6 +1,5 @@
 ﻿using Carter;
-using Festpay.Onboarding.Application.Common.Constants;
-using Festpay.Onboarding.Application.Common.Models;
+using Festpay.Onboarding.Api.Models;
 using Festpay.Onboarding.Application.Features.V1.Account.Commands;
 using Festpay.Onboarding.Application.Features.V1.Account.Queries;
 using MediatR;
@@ -24,9 +23,9 @@ namespace Festpay.Onboarding.Api.Endpoints.V1
             app.MapPatch($"{EndpointConstants.V1}{EndpointConstants.Account}/{{id:guid}}",
                 async ([FromServices] ISender sender, [FromRoute] Guid id) =>
                 {
-                    var command = new ChangeAccountStatusCommand(id);
-                    var result = await sender.Send(command);
-                    return Result.Ok(result);
+                    var command = new ChangeAccountStatusCommand(id, null);
+                    await sender.Send(command);
+                    return Result.Ok(null);
                 }
             )
             .WithTags(SwaggerTagsConstants.Account);

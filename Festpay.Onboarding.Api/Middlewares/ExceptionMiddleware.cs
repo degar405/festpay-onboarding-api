@@ -1,6 +1,6 @@
 using System.Net;
+using Festpay.Onboarding.Api.Models;
 using Festpay.Onboarding.Application.Common.Exceptions;
-using Festpay.Onboarding.Application.Common.Models;
 using Festpay.Onboarding.Domain.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

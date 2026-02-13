@@ -1,9 +1,9 @@
 using FluentValidation;
 using MediatR;
 using Festpay.Onboarding.Domain.Extensions;
-using Festpay.Onboarding.Infra.Context;
-using Festpay.Onboarding.Application.Common.Exceptions;
 using Entities = Festpay.Onboarding.Domain.Entities;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
+using Festpay.Onboarding.Application.Common.Exceptions;
 
 namespace Festpay.Onboarding.Application.Features.V1.Account.Commands;
 
@@ -12,7 +12,7 @@ public sealed record CreateAccountCommand(
     string Document,
     string Email,
     string Phone
-) : IRequest<bool>;
+) : IRequest<Guid>;
 
 public sealed class CreateAccountCommandValidator : AbstractValidator<CreateAccountCommand>
 {
@@ -38,16 +38,16 @@ public sealed class CreateAccountCommandValidator : AbstractValidator<CreateAcco
     }
 }
 
-public sealed class CreateAccountCommandHandler(FestpayContext dbContext) : IRequestHandler<CreateAccountCommand, bool>
+public sealed class CreateAccountCommandHandler(IAccountRepository repository) : IRequestHandler<CreateAccountCommand, Guid>
 {
-    public async Task<bool> Handle(
+    public async Task<Guid> Handle(
         CreateAccountCommand request,
         CancellationToken cancellationToken
     )
     {
-        if (VerifyExistingAccount(request.Document))
+        if (await repository.VerifyAccountExistence(request.Document, cancellationToken))
         {
-            throw new EntityAlreadyExistsException("Conta");
+            throw new EntityAlreadyExistsException(nameof(Entities.Account));
         }
 
         var account = Entities.Account.Create(
@@ -57,12 +57,6 @@ public sealed class CreateAccountCommandHandler(FestpayContext dbContext) : IReq
             request.Phone
         );
 
-        await dbContext.Accounts.AddAsync(account, cancellationToken);
-        return await dbContext.SaveChangesAsync(cancellationToken) > 0;
-    }
-
-    private bool VerifyExistingAccount(string document)
-    {
-        return dbContext.Accounts.Any(x => x.Document == document);
+        return await repository.CreateAccount(account, cancellationToken);
     }
 }

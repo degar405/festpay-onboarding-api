@@ -1,8 +1,10 @@
 using Carter;
 using Festpay.Onboarding.Api.Middlewares;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Application.Modules;
 using Festpay.Onboarding.Infra;
 using Festpay.Onboarding.Infra.Context;
+using Festpay.Onboarding.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,13 +22,13 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         }
     );
-});
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromDays(1);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins("https://site.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddDistributedMemoryCache();
@@ -34,16 +36,25 @@ builder.Services.AddProblemDetails();
 builder.Services.AddCarter();
 
 AppModules.AddApplication(builder.Services);
-builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddSwagger(builder.Configuration);
+
+builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
     scope.ServiceProvider.GetRequiredService<FestpayContext>().Database.Migrate();
 
-app.UseCors("AllowAllOrigins");
-app.UseSession();
+if (builder.Environment.IsDevelopment())
+{
+    app.UseCors("AllowAllOrigins");
+}
+else
+{
+    app.UseCors("AllowSpecificOrigins");
+    app.UseHsts();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

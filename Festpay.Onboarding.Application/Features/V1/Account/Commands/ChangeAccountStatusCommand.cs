@@ -1,11 +1,11 @@
 using Festpay.Onboarding.Application.Common.Exceptions;
-using Festpay.Onboarding.Infra.Context;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;
 
 namespace Festpay.Onboarding.Application.Features.V1.Account.Commands;
 
-public sealed record ChangeAccountStatusCommand(Guid Id) : IRequest<bool>;
+public sealed record ChangeAccountStatusCommand(Guid Id, bool? DisableIntention) : IRequest;
 
 public sealed class ChangeAccountStatusCommandValidator
     : AbstractValidator<ChangeAccountStatusCommand>
@@ -16,20 +16,24 @@ public sealed class ChangeAccountStatusCommandValidator
     }
 }
 
-public sealed class ChangeAccountStatusCommandHandler(FestpayContext dbContext)
-    : IRequestHandler<ChangeAccountStatusCommand, bool>
+public sealed class ChangeAccountStatusCommandHandler(IAccountRepository repository)
+    : IRequestHandler<ChangeAccountStatusCommand>
 {
-    public async Task<bool> Handle(
+    public async Task Handle(
         ChangeAccountStatusCommand request,
         CancellationToken cancellationToken
     )
     {
-        var account =
-             await dbContext.Accounts.FindAsync(request.Id, cancellationToken)
-             ?? throw new NotFoundException("Conta");
+        // TODO: trocar por verify ou receber também a intenção do usuário
+        var account = await repository.GetAccount(request.Id, cancellationToken);
+        
+        if (account == null)
+            throw new EntityAlreadyExistsException(nameof(account));
 
-        account.EnableDisable();
+        bool isDeactivated = account.DeactivatedUtc.HasValue;
+        if (request.DisableIntention is null || (bool)request.DisableIntention != isDeactivated)
+            account.EnableDisable();
 
-        return await dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await repository.ConfirmModelChanges(cancellationToken);
     }
 }

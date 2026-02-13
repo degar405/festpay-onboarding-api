@@ -1,6 +1,5 @@
-using Festpay.Onboarding.Infra.Context;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Festpay.Onboarding.Application.Features.V1.Account.Queries;
 
@@ -17,16 +16,16 @@ public sealed record GetAccountsQueryResponse(
 
 public sealed record GetAccountsQuery : IRequest<ICollection<GetAccountsQueryResponse>>;
 
-public sealed class GetAccountsQueryHandler(FestpayContext dbContext) : IRequestHandler<GetAccountsQuery, ICollection<GetAccountsQueryResponse>>
+public sealed class GetAccountsQueryHandler(IAccountRepository repository) : IRequestHandler<GetAccountsQuery, ICollection<GetAccountsQueryResponse>>
 {
     public async Task<ICollection<GetAccountsQueryResponse>> Handle(
         GetAccountsQuery request,
         CancellationToken cancellationToken
     )
     {
-        var accounts = await dbContext.Accounts.ToListAsync(cancellationToken);
+        var accounts = await repository.GetAccounts(cancellationToken);
 
-        return accounts
+        return [.. accounts
             .Select(a => new GetAccountsQueryResponse(
                 a.Id,
                 a.Name,
@@ -36,7 +35,6 @@ public sealed class GetAccountsQueryHandler(FestpayContext dbContext) : IRequest
                 a.CreatedUtc,
                 a.DeactivatedUtc,
                 a.Balance
-            ))
-            .ToList();
+            ))];
     }
 }

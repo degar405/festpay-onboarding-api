@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Festpay.Onboarding.Application\Festpay.Onboarding.Application.csproj" />
+    <ProjectReference Include="..\Festpay.Onboarding.Infra\Festpay.Onboarding.Infra.csproj" />
   </ItemGroup>
 
 </Project>
