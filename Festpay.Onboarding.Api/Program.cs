@@ -1,11 +1,10 @@
 using Carter;
+using Festpay.Onboarding.Api;
 using Festpay.Onboarding.Api.Middlewares;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Application.Modules;
 using Festpay.Onboarding.Infra;
-using Festpay.Onboarding.Infra.Context;
 using Festpay.Onboarding.Infra.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,8 +42,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-    scope.ServiceProvider.GetRequiredService<FestpayContext>().Database.Migrate();
+var runMigrationTask = app.Services.RunMigrations();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -67,5 +65,7 @@ app.MapOpenApi();
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+await runMigrationTask;
 
 await app.RunAsync();

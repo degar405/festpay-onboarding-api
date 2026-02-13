@@ -2,8 +2,6 @@ using Festpay.Onboarding.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Festpay.Onboarding.Infra;
 
@@ -18,23 +16,9 @@ public static class DependencyInjection
                 .EnableDetailedErrors(false));
     }
 
-    public static void AddSwagger(this IServiceCollection services, IConfiguration config)
+    public async static Task RunMigrations(this IServiceProvider services)
     {
-        services.AddSwaggerGen(c => c.LoadOpenApiOptions());
-    }
-
-    private static void LoadOpenApiOptions(this SwaggerGenOptions options)
-    {
-        var contact = new OpenApiContact() { Name = "Festpay Onboarding" };
-
-        var info = new OpenApiInfo
-        {
-            Version = "v1",
-            Title = "Festpay Onboarding",
-            Description = "API designed to manage the Festpay Onboarding application.",
-            Contact = contact,
-        };
-
-        options.SwaggerDoc("v1", info);
+        using (var scope = services.CreateScope())
+            await scope.ServiceProvider.GetRequiredService<FestpayContext>().Database.MigrateAsync();
     }
 }
