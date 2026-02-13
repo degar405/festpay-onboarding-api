@@ -21,7 +21,7 @@ namespace Festpay.Onboarding.Infra.Repositories
             return account.Id;
         }
 
-        public Task<Account?> GetAccount(Guid id, CancellationToken cancellationToken)
+        public Task<Account?> GetAccountWithTrack(Guid id, CancellationToken cancellationToken)
         {
             return _context.Accounts.FindAsync(id, cancellationToken).AsTask();
         }

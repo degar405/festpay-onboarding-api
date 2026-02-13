@@ -38,7 +38,7 @@ public class ChangeAccountStatusCommandHandlerTests
         var account = Entities.Account.Create("Test", "12345678909", "test@example.com", "11999999999");
         var repoMock = new Mock<IAccountRepository>();
         repoMock
-            .Setup(r => r.GetAccount(account.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
             .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))
@@ -68,7 +68,7 @@ public class ChangeAccountStatusCommandHandlerTests
         // Arrange
         var repoMock = new Mock<IAccountRepository>();
         repoMock
-            .Setup(r => r.GetAccount(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAccountWithTrack(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Entities.Account?)null);
 
         var handler = new ChangeAccountStatusCommandHandler(repoMock.Object);
@@ -94,7 +94,7 @@ public class ChangeAccountStatusCommandHandlerTests
 
         var repoMock = new Mock<IAccountRepository>();
         repoMock
-            .Setup(r => r.GetAccount(account.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
             .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))
@@ -122,7 +122,7 @@ public class ChangeAccountStatusCommandHandlerTests
 
         var repoMock = new Mock<IAccountRepository>();
         repoMock
-            .Setup(r => r.GetAccount(account.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
             .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))

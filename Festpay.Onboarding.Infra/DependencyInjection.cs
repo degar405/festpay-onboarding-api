@@ -1,5 +1,6 @@
 using Festpay.Onboarding.Infra.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,9 @@ public static class DependencyInjection
             options
                 .UseSqlite(config.GetConnectionString("DefaultConnection"))
                 .EnableSensitiveDataLogging(false)
-                .EnableDetailedErrors(false));
+                .EnableDetailedErrors(false)
+                .ConfigureWarnings(w =>
+                    w.Ignore(RelationalEventId.PendingModelChangesWarning)));
     }
 
     public async static Task RunMigrations(this IServiceProvider services)

@@ -25,7 +25,7 @@ public sealed class ChangeAccountStatusCommandHandler(IAccountRepository reposit
         CancellationToken cancellationToken
     )
     {
-        var account = await repository.GetAccount(request.Id, cancellationToken);
+        var account = await repository.GetAccountWithTrack(request.Id, cancellationToken);
         if (account == null)
             throw new EntityDoesntExistException(nameof(Entities.Account));
 

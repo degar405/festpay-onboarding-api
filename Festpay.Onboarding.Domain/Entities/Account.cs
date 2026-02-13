@@ -27,6 +27,11 @@ public class Account : EntityBase
             throw new InvalidPhoneNumberException(Phone);
     }
 
+    public void AfectBalance(decimal value)
+    {
+        Balance += value;
+    }
+
     public static Account Create(string name, string document, string email, string phone)
     {
         var account = new Account

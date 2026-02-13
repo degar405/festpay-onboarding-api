@@ -17,7 +17,6 @@ namespace Festpay.Onboarding.Domain.Tests.Entities
             Assert.Equal(source, tx.SourceAccountID);
             Assert.Equal(destination, tx.DestinationAccountID);
             Assert.Equal(value, tx.Value);
-            Assert.False(tx.IsCanceled);
         }
 
         [Fact]

@@ -7,7 +7,6 @@ namespace Festpay.Onboarding.Domain.Entities
         public Guid SourceAccountID { get; private set; }
         public Guid DestinationAccountID { get; private set; }
         public decimal Value { get; private set; }
-        public bool IsCanceled { get; private set; }
 
         public override void Validate()
         {
@@ -30,8 +29,7 @@ namespace Festpay.Onboarding.Domain.Entities
             {
                 SourceAccountID = sourceAccountID,
                 DestinationAccountID = destinationAccountID,
-                Value = value,
-                IsCanceled = false
+                Value = value
             };
 
             transaction.Validate();

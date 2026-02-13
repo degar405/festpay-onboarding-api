@@ -6,7 +6,7 @@ namespace Festpay.Onboarding.Application.Interfaces.IRepositories
     {
         Task<Guid> CreateAccount(Entities.Account account, CancellationToken cancellationToken);
         Task<List<Entities.Account>> GetAccounts(CancellationToken cancellationToken);
-        Task<Entities.Account?> GetAccount(Guid id, CancellationToken cancellationToken);
+        Task<Entities.Account?> GetAccountWithTrack(Guid id, CancellationToken cancellationToken);
         Task<bool> VerifyAccountExistence(string document, CancellationToken cancellationToken);
     }
 }

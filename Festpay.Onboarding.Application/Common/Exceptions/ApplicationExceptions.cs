@@ -33,3 +33,9 @@ public class EntityDoesntExistException(string entityName)
         string.Format(ErrorMessageConstants.EntityDoesntExist, entityName)
     )
 { }
+
+public class OperationAlreadyPerformedException(string entityName)
+    : ApplicationExceptions(
+        string.Format(ErrorMessageConstants.OperationAlreadyPerformed, entityName)
+    )
+{ }

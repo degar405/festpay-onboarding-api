@@ -73,9 +73,6 @@ namespace Festpay.Onboarding.Infra.Migrations
                     b.Property<Guid>("DestinationAccountID")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid>("SourceAccountID")
                         .HasColumnType("TEXT");
 

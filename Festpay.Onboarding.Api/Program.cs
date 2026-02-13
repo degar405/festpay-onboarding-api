@@ -39,6 +39,8 @@ builder.Services.AddSwagger(builder.Configuration);
 
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
