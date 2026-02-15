@@ -1,3 +1,4 @@
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using MediatR;
 
@@ -14,18 +15,18 @@ public sealed record GetAccountsQueryResponse(
     decimal Balance
 );
 
-public sealed record GetAccountsQuery : IRequest<ICollection<GetAccountsQueryResponse>>;
+public sealed record GetAccountsQuery : IRequest<Result<ICollection<GetAccountsQueryResponse>>>;
 
-public sealed class GetAccountsQueryHandler(IAccountRepository repository) : IRequestHandler<GetAccountsQuery, ICollection<GetAccountsQueryResponse>>
+public sealed class GetAccountsQueryHandler(IAccountRepository repository) : IRequestHandler<GetAccountsQuery, Result<ICollection<GetAccountsQueryResponse>>>
 {
-    public async Task<ICollection<GetAccountsQueryResponse>> Handle(
+    public async Task<Result<ICollection<GetAccountsQueryResponse>>> Handle(
         GetAccountsQuery request,
         CancellationToken cancellationToken
     )
     {
         var accounts = await repository.GetAccounts(cancellationToken);
 
-        return [.. accounts
+        return Result<ICollection<GetAccountsQueryResponse>>.Ok([.. accounts
             .Select(a => new GetAccountsQueryResponse(
                 a.Id,
                 a.Name,
@@ -35,6 +36,6 @@ public sealed class GetAccountsQueryHandler(IAccountRepository repository) : IRe
                 a.CreatedUtc,
                 a.DeactivatedUtc,
                 a.Balance
-            ))];
+            ))]);
     }
 }

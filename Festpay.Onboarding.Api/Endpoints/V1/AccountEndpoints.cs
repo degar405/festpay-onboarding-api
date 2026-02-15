@@ -1,43 +1,40 @@
 ﻿using Carter;
-using Festpay.Onboarding.Api.Models;
 using Festpay.Onboarding.Application.Features.V1.Account.Commands;
 using Festpay.Onboarding.Application.Features.V1.Account.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Festpay.Onboarding.Api.Endpoints.V1
+namespace Festpay.Onboarding.Api.Endpoints.V1;
+
+public class AccountEndpoints : ICarterModule
 {
-    public class AccountEndpoints : ICarterModule
+    public void AddRoutes(IEndpointRouteBuilder app)
     {
-        public void AddRoutes(IEndpointRouteBuilder app)
-        {
-            app.MapPost($"{EndpointConstants.V1}{EndpointConstants.Account}",
-                async ([FromServices] ISender sender, [FromBody] CreateAccountCommand command) =>
-                {
-                    var result = await sender.Send(command);
-                    return Result.Ok(result);
-                }
-            )
-            .WithTags(SwaggerTagsConstants.Account);
+        app.MapPost($"{EndpointConstants.V1}{EndpointConstants.Account}",
+            async (HttpContext context, ISender sender, CreateAccountCommand command) =>
+            {
+                var result = await sender.Send(command);
+                return result.ToHttpResult(context.Request.Method);
+            }
+        )
+        .WithTags(SwaggerTagsConstants.Account);
 
-            app.MapPatch($"{EndpointConstants.V1}{EndpointConstants.Account}/{{id:guid}}/status",
-                async ([FromServices] ISender sender, [FromRoute] Guid id, [FromQuery] bool? deactivateIntention) =>
-                {
-                    var command = new ChangeAccountStatusCommand(id, deactivateIntention);
-                    await sender.Send(command);
-                    return Result.Ok(null);
-                }
-            )
-            .WithTags(SwaggerTagsConstants.Account);
+        app.MapPatch($"{EndpointConstants.V1}{EndpointConstants.Account}/{{id:guid}}/status",
+            async (HttpContext context, ISender sender, Guid id, bool? deactivateIntention) =>
+            {
+                var command = new ChangeAccountStatusCommand(id, deactivateIntention);
+                var result = await sender.Send(command);
+                return result.ToHttpResult(context.Request.Method);
+            }
+        )
+        .WithTags(SwaggerTagsConstants.Account);
 
-            app.MapGet($"{EndpointConstants.V1}{EndpointConstants.Account}",
-                async ([FromServices] ISender sender) =>
-                {
-                    var result = await sender.Send(new GetAccountsQuery());
-                    return Result.Ok(result);
-                }
-            )
-            .WithTags(SwaggerTagsConstants.Account);
-        }
+        app.MapGet($"{EndpointConstants.V1}{EndpointConstants.Account}",
+            async (HttpContext context, ISender sender) =>
+            {
+                var result = await sender.Send(new GetAccountsQuery());
+                return result.ToHttpResult(context.Request.Method);
+            }
+        )
+        .WithTags(SwaggerTagsConstants.Account);
     }
 }

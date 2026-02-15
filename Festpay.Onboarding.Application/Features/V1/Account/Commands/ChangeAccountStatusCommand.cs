@@ -1,4 +1,5 @@
 using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;
@@ -6,7 +7,7 @@ using Entities = Festpay.Onboarding.Domain.Entities;
 
 namespace Festpay.Onboarding.Application.Features.V1.Account.Commands;
 
-public sealed record ChangeAccountStatusCommand(Guid Id, bool? DisableIntention) : IRequest;
+public sealed record ChangeAccountStatusCommand(Guid Id, bool? DisableIntention) : IRequest<Result>;
 
 public sealed class ChangeAccountStatusCommandValidator
     : AbstractValidator<ChangeAccountStatusCommand>
@@ -18,9 +19,9 @@ public sealed class ChangeAccountStatusCommandValidator
 }
 
 public sealed class ChangeAccountStatusCommandHandler(IAccountRepository repository)
-    : IRequestHandler<ChangeAccountStatusCommand>
+    : IRequestHandler<ChangeAccountStatusCommand, Result>
 {
-    public async Task Handle(
+    public async Task<Result> Handle(
         ChangeAccountStatusCommand request,
         CancellationToken cancellationToken
     )
@@ -34,5 +35,7 @@ public sealed class ChangeAccountStatusCommandHandler(IAccountRepository reposit
             account.EnableDisable();
 
         await repository.ConfirmModelChanges(cancellationToken);
+
+        return Result.Ok();
     }
 }

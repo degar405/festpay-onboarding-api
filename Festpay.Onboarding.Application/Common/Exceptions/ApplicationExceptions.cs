@@ -1,5 +1,4 @@
 using Festpay.Onboarding.Application.Common.Constants;
-using FluentValidation.Results;
 
 namespace Festpay.Onboarding.Application.Common.Exceptions;
 
@@ -15,12 +14,6 @@ public class ApplicationExceptions : Exception
 public class NotFoundException(string entityName)
     : ApplicationExceptions(string.Format(ErrorMessageConstants.NotFound, entityName))
 { }
-
-public class ValidationException(IEnumerable<ValidationFailure> failures)
-    : ApplicationExceptions(string.Join(" / ", failures.Select(f => f.ErrorMessage)))
-{
-    public IEnumerable<ValidationFailure> Failures { get; } = failures;
-}
 
 public class EntityAlreadyExistsException(string entityName)
     : ApplicationExceptions(

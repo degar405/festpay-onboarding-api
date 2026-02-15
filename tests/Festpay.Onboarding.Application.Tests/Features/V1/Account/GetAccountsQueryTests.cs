@@ -29,10 +29,11 @@ public class GetAccountsQueryHandlerTests
         var result = await handler.Handle(new GetAccountsQuery(), CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
+        var dataResult = result?.Data;
+        Assert.NotNull(dataResult);
+        Assert.Equal(2, dataResult.Count);
 
-        var resList = result.ToList();
+        var resList = dataResult.ToList();
 
         // Validate first account mapping
         Assert.Equal(account1.Id, resList[0].Id);
@@ -72,8 +73,9 @@ public class GetAccountsQueryHandlerTests
         var result = await handler.Handle(new GetAccountsQuery(), CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        var resultData = result?.Data;
+        Assert.NotNull(resultData);
+        Assert.Empty(resultData);
         repoMock.Verify(r => r.GetAccounts(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

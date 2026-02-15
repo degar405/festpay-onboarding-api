@@ -135,7 +135,7 @@ public class CreateAccountCommandTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.Equal(expectedId, result);
+        Assert.Equal(expectedId, result?.Data);
         repoMock.Verify(r => r.VerifyAccountExistence(command.Document, It.IsAny<CancellationToken>()), Times.Once);
 
         repoMock.Verify(r =>

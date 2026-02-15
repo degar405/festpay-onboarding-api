@@ -1,5 +1,5 @@
-using System.Reflection;
 using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;
@@ -7,7 +7,7 @@ using Entities = Festpay.Onboarding.Domain.Entities;
 
 namespace Festpay.Onboarding.Application.Features.V1.Transaction.Commands;
 
-public sealed record CancelTransactionCommand(Guid Id) : IRequest;
+public sealed record CancelTransactionCommand(Guid Id) : IRequest<Result>;
 
 public sealed class CancelTransactionCommandValidator : AbstractValidator<CancelTransactionCommand>
 {
@@ -18,9 +18,9 @@ public sealed class CancelTransactionCommandValidator : AbstractValidator<Cancel
 }
 
 public sealed class CancelTransactionCommandHandler(IUnitOfWork uow)
-    : IRequestHandler<CancelTransactionCommand>
+    : IRequestHandler<CancelTransactionCommand, Result>
 {
-    public async Task Handle(
+    public async Task<Result> Handle(
         CancelTransactionCommand request,
         CancellationToken cancellationToken
     )
@@ -44,5 +44,6 @@ public sealed class CancelTransactionCommandHandler(IUnitOfWork uow)
         destinationAccount.AfectBalance(-1 * transaction.Value);
 
         await uow.SaveChangesAsync(cancellationToken);
+        return Result.Ok();
     }
 }

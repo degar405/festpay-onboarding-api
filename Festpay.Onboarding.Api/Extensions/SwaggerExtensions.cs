@@ -1,9 +1,9 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Festpay.Onboarding.Api
+namespace Festpay.Onboarding.Api.Extensions
 {
-    public static class StartupExtensions
+    public static class SwaggerExtensions
     {
         public static void AddSwagger(this IServiceCollection services, IConfiguration config)
         {

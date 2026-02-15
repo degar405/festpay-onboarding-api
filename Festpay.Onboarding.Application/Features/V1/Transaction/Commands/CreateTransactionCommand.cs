@@ -3,6 +3,7 @@ using MediatR;
 using Entities = Festpay.Onboarding.Domain.Entities;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Results;
 
 namespace Festpay.Onboarding.Application.Features.V1.Transaction.Commands;
 
@@ -10,7 +11,7 @@ public sealed record CreateTransactionCommand(
     Guid SourceAccountID,
     Guid DestinationAccountID,
     decimal Value
-) : IRequest<Guid>;
+) : IRequest<Result<Guid>>;
 
 public sealed class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
 {
@@ -33,9 +34,9 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
 }
 
 public sealed class CreateTransactionCommandHandler(ITransactionRepository repository, IAccountRepository accountRepository)
-    : IRequestHandler<CreateTransactionCommand, Guid>
+    : IRequestHandler<CreateTransactionCommand, Result<Guid>>
 {
-    public async Task<Guid> Handle(
+    public async Task<Result<Guid>> Handle(
         CreateTransactionCommand request,
         CancellationToken cancellationToken
     )
@@ -60,6 +61,7 @@ public sealed class CreateTransactionCommandHandler(ITransactionRepository repos
         sourceAccount.AfectBalance(-1 * transaction.Value);
         destinationAccount.AfectBalance(transaction.Value);
 
-        return await repository.CreateTransaction(transaction, cancellationToken);
+        var result = await repository.CreateTransaction(transaction, cancellationToken);
+        return Result<Guid>.Ok(result);
     }
 }

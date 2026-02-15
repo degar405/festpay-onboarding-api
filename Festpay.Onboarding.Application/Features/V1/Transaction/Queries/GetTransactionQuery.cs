@@ -1,4 +1,5 @@
 using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using MediatR;
 using Entities = Festpay.Onboarding.Domain.Entities;
@@ -14,11 +15,11 @@ public sealed record GetTransactionQueryResponse(
     DateTime? DeactivatedAt
 );
 
-public sealed record GetTransactionQuery(Guid Id) : IRequest<GetTransactionQueryResponse>;
+public sealed record GetTransactionQuery(Guid Id) : IRequest<Result<GetTransactionQueryResponse>>;
 
-public sealed class GetTransactionQueryHandler(ITransactionRepository repository) : IRequestHandler<GetTransactionQuery, GetTransactionQueryResponse>
+public sealed class GetTransactionQueryHandler(ITransactionRepository repository) : IRequestHandler<GetTransactionQuery, Result<GetTransactionQueryResponse>>
 {
-    public async Task<GetTransactionQueryResponse> Handle(
+    public async Task<Result<GetTransactionQueryResponse>> Handle(
         GetTransactionQuery request,
         CancellationToken cancellationToken
     )
@@ -27,13 +28,13 @@ public sealed class GetTransactionQueryHandler(ITransactionRepository repository
         if (transaction == null)
             throw new EntityDoesntExistException(nameof(Entities.Transaction));
 
-        return new GetTransactionQueryResponse(
+        return Result<GetTransactionQueryResponse>.Ok(new GetTransactionQueryResponse(
                 transaction.Id,
                 transaction.SourceAccountID,
                 transaction.DestinationAccountID,
                 transaction.Value,
                 transaction.CreatedUtc,
                 transaction.DeactivatedUtc
-            );
+            ));
     }
 }
