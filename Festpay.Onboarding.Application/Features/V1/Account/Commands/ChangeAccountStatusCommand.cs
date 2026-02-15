@@ -1,5 +1,4 @@
 using Festpay.Onboarding.Application.Common.Exceptions;
-using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;

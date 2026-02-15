@@ -1,4 +1,5 @@
 ﻿using Carter;
+using Festpay.Onboarding.Api.Models;
 using Festpay.Onboarding.Application.Features.V1.Transaction.Commands;
 using Festpay.Onboarding.Application.Features.V1.Transaction.Queries;
 using MediatR;
@@ -35,6 +36,8 @@ public class TransactionEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces<ICollection<GetTransactionsQueryResponse>>(StatusCodes.Status200OK)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Transaction);
 
         app.MapGet($"{EndpointConstants.V1}{EndpointConstants.Transaction}/{{id:guid}}",
@@ -44,6 +47,10 @@ public class TransactionEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces<GetTransactionsQueryResponse>(StatusCodes.Status200OK)
+        .Produces<ErrorResponseModel>(StatusCodes.Status404NotFound)
+        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Transaction);
     }
 }

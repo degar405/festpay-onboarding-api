@@ -40,6 +40,8 @@ public class AccountEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces<ICollection<GetAccountsQueryResponse>>(StatusCodes.Status200OK)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Account);
     }
 }
