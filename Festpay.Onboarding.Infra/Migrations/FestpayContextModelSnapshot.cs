@@ -54,6 +54,9 @@ namespace Festpay.Onboarding.Infra.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Document")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
                 });
 
