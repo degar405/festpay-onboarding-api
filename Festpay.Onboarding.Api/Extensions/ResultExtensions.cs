@@ -1,4 +1,5 @@
-﻿using Festpay.Onboarding.Application.Common.Results;
+﻿using Festpay.Onboarding.Api.Models;
+using Festpay.Onboarding.Application.Common.Results;
 
 public static class ResultExtensions
 {
@@ -10,19 +11,19 @@ public static class ResultExtensions
         return result.ErrorType switch
         {
             ErrorTypeEnum.Validation =>
-                Results.UnprocessableEntity(result.Errors),
+                Results.UnprocessableEntity(new ErrorResponseModel(result.Errors)),
 
             ErrorTypeEnum.NotFound =>
-                Results.NotFound(result.Errors),
+                Results.NotFound(new ErrorResponseModel(result.Errors)),
 
             ErrorTypeEnum.Conflict =>
-                Results.Conflict(result.Errors),
+                Results.Conflict(new ErrorResponseModel(result.Errors)),
 
             ErrorTypeEnum.Failure =>
-                Results.BadRequest(result.Errors),
+                Results.BadRequest(new ErrorResponseModel(result.Errors)),
 
             _ =>
-                Results.BadRequest(result.Errors)
+                Results.BadRequest(new ErrorResponseModel(result.Errors))
         };
     }
 

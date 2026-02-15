@@ -1,4 +1,4 @@
-using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Constants;
 using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Domain.Extensions;
@@ -48,7 +48,7 @@ public sealed class CreateAccountCommandHandler(IAccountRepository repository) :
     {
         if (await repository.VerifyAccountExistence(request.Document, cancellationToken))
         {
-            throw new EntityAlreadyExistsException(nameof(Entities.Account));
+            return Result<Guid>.Conflict(string.Format(ErrorMessageConstants.EntityAlreadyExists, nameof(Entities.Account)));
         }
 
         var account = Entities.Account.Create(
@@ -58,8 +58,6 @@ public sealed class CreateAccountCommandHandler(IAccountRepository repository) :
             request.Phone
         );
 
-        var id = await repository.CreateAccount(account, cancellationToken);
-
-        return Result<Guid>.Ok(id);
+        return await repository.CreateAccount(account, cancellationToken);
     }
 }

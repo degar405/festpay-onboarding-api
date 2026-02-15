@@ -1,8 +1,9 @@
-using System.Net;
+using Festpay.Onboarding.Api.Models;
 using Festpay.Onboarding.Application.Common.Exceptions;
 using Festpay.Onboarding.Domain.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Net;
 
 namespace Festpay.Onboarding.Api.Middlewares;
 
@@ -51,35 +52,17 @@ public class ExceptionMiddleware(
         }
     }
 
-    private object BuildResponse(Exception ex, int statusCode)
+    private ErrorResponseModel BuildResponse(Exception ex, int statusCode)
     {
         if (environment.IsDevelopment())
-        {
-            return new
-            {
-                success = false,
-                message = ex.Message,
-                errors = new[]
-                {
-                    ex.GetType().Name,
-                    ex.StackTrace
-                }
-            };
-        }
+            return ErrorResponseModel.CreateDevelopmentErrorResponse(ex);
 
         if (statusCode == StatusCodes.Status500InternalServerError)
-        {
-            return new
-            {
-                success = false,
-                message = "An unexpected error occurred."
-            };
-        }
+            return new ErrorResponseModel();
 
-        return new
+        return new ErrorResponseModel
         {
-            success = false,
-            message = ex.Message
+            ErrorMessage = ex.Message
         };
     }
 }
