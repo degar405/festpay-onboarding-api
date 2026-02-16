@@ -43,7 +43,6 @@ public sealed class CancelTransactionCommandHandler(IUnitOfWork uow)
         sourceAccount.AfectBalance(transaction.Value);
         destinationAccount.AfectBalance(-1 * transaction.Value);
 
-        await uow.SaveChangesAsync(cancellationToken);
-        return Result.Ok();
+        return await uow.Transactions.ConfirmModelChanges(cancellationToken, nameof(Entities.Account));
     }
 }

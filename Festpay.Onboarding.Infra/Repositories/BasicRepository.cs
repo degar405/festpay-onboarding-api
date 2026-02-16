@@ -1,5 +1,4 @@
 ﻿using Festpay.Onboarding.Application.Common.Constants;
-using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Infra.Context;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +22,7 @@ namespace Festpay.Onboarding.Infra.Repositories
             }
             catch (DbUpdateConcurrencyException)
             {
-                return Result<Guid>.Conflict(string.Format(ErrorMessageConstants.ConcurrentOperationDetected, entity));
+                return Result.Conflict(string.Format(ErrorMessageConstants.ConcurrentOperationDetected, entity));
             }
 
             return Result.Ok();
