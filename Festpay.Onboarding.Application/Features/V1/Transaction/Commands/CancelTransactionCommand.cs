@@ -1,4 +1,4 @@
-using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Constants;
 using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
@@ -27,17 +27,17 @@ public sealed class CancelTransactionCommandHandler(IUnitOfWork uow)
     {
         var transaction = await uow.Transactions.GetTransactionWithTracking(request.Id, cancellationToken);
         if (transaction == null)
-            throw new EntityDoesntExistException(nameof(Entities.Transaction));
+            return Result<Guid>.NotFound(string.Format(ErrorMessageConstants.EntityDoesntExist, nameof(Entities.Transaction)));
         if (transaction.DeactivatedUtc.HasValue)
-            throw new OperationAlreadyPerformedException(nameof(Entities.Transaction));
-        
+            return Result<Guid>.Conflict(string.Format(ErrorMessageConstants.OperationAlreadyPerformed, nameof(Entities.Transaction)));
+
         var sourceAccount = await uow.Accounts.GetAccountWithTrack(transaction.SourceAccountID, cancellationToken);
         if (sourceAccount == null)
-            throw new EntityDoesntExistException("Source Account");
+            return Result<Guid>.NotFound(string.Format(ErrorMessageConstants.EntityDoesntExist, "Source Account"));
 
         var destinationAccount = await uow.Accounts.GetAccountWithTrack(transaction.DestinationAccountID, cancellationToken);
         if (destinationAccount == null)
-            throw new EntityDoesntExistException("Destination Account");
+            return Result<Guid>.NotFound(string.Format(ErrorMessageConstants.EntityDoesntExist, "Destination Account"));
 
         transaction.EnableDisable();
         sourceAccount.AfectBalance(transaction.Value);

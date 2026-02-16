@@ -1,9 +1,9 @@
+using Festpay.Onboarding.Application.Common.Constants;
+using Festpay.Onboarding.Application.Common.Results;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;
 using Entities = Festpay.Onboarding.Domain.Entities;
-using Festpay.Onboarding.Application.Interfaces.IRepositories;
-using Festpay.Onboarding.Application.Common.Exceptions;
-using Festpay.Onboarding.Application.Common.Results;
 
 namespace Festpay.Onboarding.Application.Features.V1.Transaction.Commands;
 
@@ -43,14 +43,14 @@ public sealed class CreateTransactionCommandHandler(ITransactionRepository repos
     {
         var sourceAccount = await accountRepository.GetAccountWithTrack(request.SourceAccountID, cancellationToken);
         if (sourceAccount == null)
-            throw new EntityDoesntExistException("Source Account");
+            return Result<Guid>.NotFound(string.Format(ErrorMessageConstants.EntityDoesntExist,"Source Account"));
 
         var destinationAccount = await accountRepository.GetAccountWithTrack(request.DestinationAccountID, cancellationToken);
         if (destinationAccount == null)
-            throw new EntityDoesntExistException("Destination Account");
+            return Result<Guid>.NotFound(string.Format(ErrorMessageConstants.EntityDoesntExist, "Destination Account"));
 
         if (destinationAccount.DeactivatedUtc.HasValue || sourceAccount.DeactivatedUtc.HasValue)
-            throw new InactiveEntityException(nameof(Entities.Account));
+            return Result<Guid>.Failure(string.Format(ErrorMessageConstants.InativeEntity, nameof(Entities.Account)));
 
         var transaction = Entities.Transaction.Create(
             request.SourceAccountID,
