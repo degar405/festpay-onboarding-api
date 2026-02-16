@@ -27,8 +27,7 @@ public class ExceptionMiddleware(
             response.StatusCode = ex switch
             {
                 DomainException => StatusCodes.Status400BadRequest,
-                NotFoundException => StatusCodes.Status404NotFound,
-                ApplicationException => StatusCodes.Status400BadRequest,
+                ApplicationExceptions => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError,
             };
 

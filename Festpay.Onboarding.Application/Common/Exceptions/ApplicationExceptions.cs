@@ -15,12 +15,6 @@ public class NotFoundException(string entityName)
     : ApplicationExceptions(string.Format(ErrorMessageConstants.NotFound, entityName))
 { }
 
-public class EntityAlreadyExistsException(string entityName)
-    : ApplicationExceptions(
-        string.Format(ErrorMessageConstants.EntityAlreadyExists, entityName)
-    )
-{ }
-
 public class EntityDoesntExistException(string entityName)
     : ApplicationExceptions(
         string.Format(ErrorMessageConstants.EntityDoesntExist, entityName)
