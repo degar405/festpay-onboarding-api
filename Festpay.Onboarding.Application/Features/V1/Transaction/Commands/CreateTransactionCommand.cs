@@ -33,7 +33,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
     }
 }
 
-public sealed class CreateTransactionCommandHandler(ITransactionRepository repository, IAccountRepository accountRepository)
+public sealed class CreateTransactionCommandHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository)
     : IRequestHandler<CreateTransactionCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(
@@ -61,6 +61,6 @@ public sealed class CreateTransactionCommandHandler(ITransactionRepository repos
         sourceAccount.AfectBalance(-1 * transaction.Value);
         destinationAccount.AfectBalance(transaction.Value);
 
-        return await repository.CreateTransaction(transaction, cancellationToken);
+        return await transactionRepository.CreateTransaction(transaction, cancellationToken);
     }
 }
