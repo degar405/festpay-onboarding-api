@@ -1,4 +1,4 @@
-using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Constants;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using FluentValidation;
 using MediatR;
@@ -27,14 +27,12 @@ public sealed class ChangeAccountStatusCommandHandler(IAccountRepository reposit
     {
         var account = await repository.GetAccountWithTrack(request.Id, cancellationToken);
         if (account == null)
-            throw new EntityDoesntExistException(nameof(Entities.Account));
+            return Result.NotFound(string.Format(ErrorMessageConstants.NotFound, nameof(Entities.Account)));
 
         bool isDeactivated = account.DeactivatedUtc.HasValue;
         if (request.DisableIntention is null || (bool)request.DisableIntention != isDeactivated)
             account.EnableDisable();
 
-        await repository.ConfirmModelChanges(cancellationToken);
-
-        return Result.Ok();
+        return await repository.ConfirmModelChanges(cancellationToken, nameof(Entities.Account));
     }
 }

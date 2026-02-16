@@ -1,7 +1,9 @@
-using Moq;
-using Festpay.Onboarding.Application.Features.V1.Account.Commands;
+using Festpay.Onboarding.Application.Common.Constants;
 using Festpay.Onboarding.Application.Common.Exceptions;
+using Festpay.Onboarding.Application.Common.Results;
+using Festpay.Onboarding.Application.Features.V1.Account.Commands;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
+using Moq;
 using Entities = Festpay.Onboarding.Domain.Entities;
 
 namespace Festpay.Onboarding.Application.Tests.Features.V1.Account;
@@ -41,8 +43,8 @@ public class ChangeAccountStatusCommandHandlerTests
             .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
-            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()))
+            .Returns(Task.FromResult(Result.Ok()));
 
         var handler = new ChangeAccountStatusCommandHandler(repoMock.Object);
         var command = new ChangeAccountStatusCommand(account.Id, null);
@@ -52,18 +54,18 @@ public class ChangeAccountStatusCommandHandlerTests
 
         // Assert disabled & confirm called once
         Assert.NotNull(account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Once);
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Once);
 
         // Act - enable (call again)
         await handler.Handle(command, CancellationToken.None);
 
         // Assert enabled & confirm called twice total
         Assert.Null(account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Exactly(2));
     }
 
     [Fact]
-    public async Task Handler_Should_Throw_EntityDoesntExistException_When_Account_Not_Found()
+    public async Task Handler_Should_Return_Result_NotFound_When_Account_Not_Found()
     {
         // Arrange
         var repoMock = new Mock<IAccountRepository>();
@@ -75,11 +77,12 @@ public class ChangeAccountStatusCommandHandlerTests
         var command = new ChangeAccountStatusCommand(Guid.NewGuid(), null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<EntityDoesntExistException>(() =>
-            handler.Handle(command, CancellationToken.None)
-        );
-
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Never);
+        var result = await handler.Handle(command, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypeEnum.NotFound, result.ErrorType);
+        Assert.Equal(string.Format(ErrorMessageConstants.NotFound, nameof(Entities.Account)), result.Errors.FirstOrDefault());
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Never);
     }
 
     [Theory]
@@ -97,8 +100,8 @@ public class ChangeAccountStatusCommandHandlerTests
             .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
-            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()))
+            .Returns(Task.FromResult(Result.Ok()));
 
         var handler = new ChangeAccountStatusCommandHandler(repoMock.Object);
         var command = new ChangeAccountStatusCommand(account.Id, currentlyDeactivated);
@@ -110,7 +113,7 @@ public class ChangeAccountStatusCommandHandlerTests
 
         // Assert no change and ConfirmModelChanges called once
         Assert.Equal(before, account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Once);
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
@@ -125,8 +128,8 @@ public class ChangeAccountStatusCommandHandlerTests
             .Setup(r => r.GetAccountWithTrack(account.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(account);
         repoMock
-            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Setup(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()))
+            .Returns(Task.FromResult(Result.Ok()));
 
         var handler = new ChangeAccountStatusCommandHandler(repoMock.Object);
 
@@ -136,7 +139,7 @@ public class ChangeAccountStatusCommandHandlerTests
 
         // Assert disabled and saved
         Assert.NotNull(account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Once);
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Once);
 
         // Act: ask to enable (different from current deactivated state)
         var commandEnable = new ChangeAccountStatusCommand(account.Id, false);
@@ -144,6 +147,6 @@ public class ChangeAccountStatusCommandHandlerTests
 
         // Assert enabled and saved again
         Assert.Null(account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Exactly(2));
     }
 }

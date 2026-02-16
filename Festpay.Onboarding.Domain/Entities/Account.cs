@@ -11,6 +11,7 @@ public class Account : EntityBase
     public string Document { get; private set; } = string.Empty;
     public decimal Balance { get; private set; } = 0;
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public Guid Version { get; private set; }
 
     public override void Validate()
     {
@@ -27,9 +28,16 @@ public class Account : EntityBase
             throw new InvalidPhoneNumberException(Phone);
     }
 
+    public override void EnableDisable()
+    {
+        base.EnableDisable();
+        Version = Guid.NewGuid();
+    }
+
     public void AfectBalance(decimal value)
     {
         Balance += value;
+        Version = Guid.NewGuid();
     }
 
     public static Account Create(string name, string document, string email, string phone)
@@ -39,7 +47,8 @@ public class Account : EntityBase
             Name = name,
             Document = document,
             Email = email,
-            Phone = phone
+            Phone = phone,
+            Version = Guid.NewGuid()
         };
 
         account.Validate();

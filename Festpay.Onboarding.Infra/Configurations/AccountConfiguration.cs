@@ -9,7 +9,11 @@ public class AccountConfiguration : ConfigurationBase<Account>, IEntityTypeConfi
     public void Configure(EntityTypeBuilder<Account> builder)
     {
         ConfigureEntityBase(builder);
-        builder.HasIndex(a => a.Document).IsUnique();
-
+        builder
+            .HasIndex(a => a.Document)
+            .IsUnique();
+        builder
+            .Property(a => a.Version)
+            .IsConcurrencyToken();
     }
 }

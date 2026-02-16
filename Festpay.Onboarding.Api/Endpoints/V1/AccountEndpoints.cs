@@ -31,6 +31,11 @@ public class AccountEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResponseModel>(StatusCodes.Status404NotFound)
+        .Produces<ErrorResponseModel>(StatusCodes.Status409Conflict)
+        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Account);
 
         app.MapGet($"{EndpointConstants.V1}{EndpointConstants.Account}",

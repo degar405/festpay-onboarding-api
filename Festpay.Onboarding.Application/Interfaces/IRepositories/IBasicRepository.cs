@@ -2,6 +2,6 @@
 {
     public interface IBasicRepository
     {
-        Task ConfirmModelChanges(CancellationToken cancellationToken);
+        Task<Result> ConfirmModelChanges(CancellationToken cancellationToken, string entity);
     }
 }
