@@ -1,10 +1,11 @@
 using Carter;
-using Festpay.Onboarding.Api;
+using Festpay.Onboarding.Api.Extensions;
 using Festpay.Onboarding.Api.Middlewares;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Application.Modules;
 using Festpay.Onboarding.Infra;
 using Festpay.Onboarding.Infra.Repositories;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,12 @@ builder.Services.AddSwagger(builder.Configuration);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.DefaultIgnoreCondition =
+        JsonIgnoreCondition.WhenWritingNull;
+});
 
 var app = builder.Build();
 

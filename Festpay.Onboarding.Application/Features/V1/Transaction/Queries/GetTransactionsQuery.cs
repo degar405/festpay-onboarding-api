@@ -1,3 +1,4 @@
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using MediatR;
 
@@ -12,18 +13,18 @@ public sealed record GetTransactionsQueryResponse(
     DateTime? DeactivatedAt
 );
 
-public sealed record GetTransactionsQuery : IRequest<ICollection<GetTransactionsQueryResponse>>;
+public sealed record GetTransactionsQuery : IRequest<Result<ICollection<GetTransactionsQueryResponse>>>;
 
-public sealed class GetTransactionsQueryHandler(ITransactionRepository repository) : IRequestHandler<GetTransactionsQuery, ICollection<GetTransactionsQueryResponse>>
+public sealed class GetTransactionsQueryHandler(ITransactionRepository repository) : IRequestHandler<GetTransactionsQuery, Result<ICollection<GetTransactionsQueryResponse>>>
 {
-    public async Task<ICollection<GetTransactionsQueryResponse>> Handle(
+    public async Task<Result<ICollection<GetTransactionsQueryResponse>>> Handle(
         GetTransactionsQuery request,
         CancellationToken cancellationToken
     )
     {
         var transactions = await repository.GetTransactions(cancellationToken);
 
-        return [.. transactions
+        return Result<ICollection<GetTransactionsQueryResponse>>.Ok([.. transactions
             .Select(a => new GetTransactionsQueryResponse(
                 a.Id,
                 a.SourceAccountID,
@@ -31,6 +32,6 @@ public sealed class GetTransactionsQueryHandler(ITransactionRepository repositor
                 a.Value,
                 a.CreatedUtc,
                 a.DeactivatedUtc
-            ))];
+            ))]);
     }
 }

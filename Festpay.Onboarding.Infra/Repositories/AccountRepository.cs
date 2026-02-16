@@ -1,4 +1,6 @@
-﻿using Festpay.Onboarding.Application.Interfaces.IRepositories;
+﻿using Festpay.Onboarding.Application.Common.Constants;
+using Festpay.Onboarding.Application.Common.Results;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
 using Festpay.Onboarding.Domain.Entities;
 using Festpay.Onboarding.Infra.Context;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,19 @@ namespace Festpay.Onboarding.Infra.Repositories
             _context = context;
         }
 
-        public async Task<Guid> CreateAccount(Account account, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> CreateAccount(Account account, CancellationToken cancellationToken)
         {
             await _context.Accounts.AddAsync(account, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            return account.Id;
+            try 
+            { 
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
+            {
+                return Result<Guid>.Conflict(string.Format(ErrorMessageConstants.EntityAlreadyExists, nameof(Account)));
+            }
+
+            return Result<Guid>.Ok(account.Id);
         }
 
         public Task<Account?> GetAccountWithTrack(Guid id, CancellationToken cancellationToken)

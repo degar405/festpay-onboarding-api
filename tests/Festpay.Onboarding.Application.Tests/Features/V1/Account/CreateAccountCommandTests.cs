@@ -1,7 +1,8 @@
-using Moq;
+using Festpay.Onboarding.Application.Common.Constants;
+using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Features.V1.Account.Commands;
-using Festpay.Onboarding.Application.Common.Exceptions;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;
+using Moq;
 using Entities = Festpay.Onboarding.Domain.Entities;
 
 namespace Festpay.Onboarding.Application.Tests.Features.V1.Account;
@@ -95,7 +96,7 @@ public class CreateAccountCommandTests
     // -------- Handler tests --------
 
     [Fact]
-    public async Task Handler_Should_Throw_EntityAlreadyExistsException_When_Document_Already_Exists()
+    public async Task Handler_Should_Return_Conflict_When_Document_Already_Exists()
     {
         // Arrange
         var repoMock = new Mock<IAccountRepository>();
@@ -107,9 +108,11 @@ public class CreateAccountCommandTests
         var command = new CreateAccountCommand("Name", "16670073607", "test@example.com", "11999999999");
 
         // Act & Assert
-        await Assert.ThrowsAsync<EntityAlreadyExistsException>(() =>
-            handler.Handle(command, CancellationToken.None)
-        );
+        var result = await handler.Handle(command, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypeEnum.Conflict, result.ErrorType);
+        Assert.Equal(string.Format(ErrorMessageConstants.EntityAlreadyExists, nameof(Entities.Account)), result.Errors.FirstOrDefault());
 
         repoMock.Verify(r => r.CreateAccount(It.IsAny<Entities.Account>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -118,7 +121,7 @@ public class CreateAccountCommandTests
     public async Task Handler_Should_Create_Account_When_Data_Is_Valid()
     {
         // Arrange
-        var expectedId = Guid.NewGuid();
+        var expectedId = Result<Guid>.Ok(Guid.NewGuid());
         var repoMock = new Mock<IAccountRepository>();
         repoMock
             .Setup(r => r.VerifyAccountExistence(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -135,7 +138,7 @@ public class CreateAccountCommandTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.Equal(expectedId, result);
+        Assert.Equal(expectedId.Data, result?.Data);
         repoMock.Verify(r => r.VerifyAccountExistence(command.Document, It.IsAny<CancellationToken>()), Times.Once);
 
         repoMock.Verify(r =>

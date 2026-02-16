@@ -1,9 +1,10 @@
+using Festpay.Onboarding.Application.Common.Constants;
+using Festpay.Onboarding.Application.Common.Results;
+using Festpay.Onboarding.Application.Interfaces.IRepositories;
+using Festpay.Onboarding.Domain.Extensions;
 using FluentValidation;
 using MediatR;
-using Festpay.Onboarding.Domain.Extensions;
 using Entities = Festpay.Onboarding.Domain.Entities;
-using Festpay.Onboarding.Application.Interfaces.IRepositories;
-using Festpay.Onboarding.Application.Common.Exceptions;
 
 namespace Festpay.Onboarding.Application.Features.V1.Account.Commands;
 
@@ -12,7 +13,7 @@ public sealed record CreateAccountCommand(
     string Document,
     string Email,
     string Phone
-) : IRequest<Guid>;
+) : IRequest<Result<Guid>>;
 
 public sealed class CreateAccountCommandValidator : AbstractValidator<CreateAccountCommand>
 {
@@ -38,16 +39,16 @@ public sealed class CreateAccountCommandValidator : AbstractValidator<CreateAcco
     }
 }
 
-public sealed class CreateAccountCommandHandler(IAccountRepository repository) : IRequestHandler<CreateAccountCommand, Guid>
+public sealed class CreateAccountCommandHandler(IAccountRepository repository) : IRequestHandler<CreateAccountCommand, Result<Guid>>
 {
-    public async Task<Guid> Handle(
+    public async Task<Result<Guid>> Handle(
         CreateAccountCommand request,
         CancellationToken cancellationToken
     )
     {
         if (await repository.VerifyAccountExistence(request.Document, cancellationToken))
         {
-            throw new EntityAlreadyExistsException(nameof(Entities.Account));
+            return Result<Guid>.Conflict(string.Format(ErrorMessageConstants.EntityAlreadyExists, nameof(Entities.Account)));
         }
 
         var account = Entities.Account.Create(
