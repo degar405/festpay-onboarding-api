@@ -30,9 +30,10 @@ public sealed class ChangeAccountStatusCommandHandler(IAccountRepository reposit
             return Result.NotFound(string.Format(ErrorMessageConstants.NotFound, nameof(Entities.Account)));
 
         bool isDeactivated = account.DeactivatedUtc.HasValue;
-        if (request.DisableIntention is null || (bool)request.DisableIntention != isDeactivated)
-            account.EnableDisable();
-
+        if (request.DisableIntention != null && (bool)request.DisableIntention == isDeactivated)
+            return Result.Conflict(string.Format(ErrorMessageConstants.InvalidOperationForEntity, nameof(Entities.Account)));
+            
+        account.EnableDisable();
         return await repository.ConfirmModelChanges(cancellationToken, nameof(Entities.Account));
     }
 }

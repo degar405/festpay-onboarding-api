@@ -92,7 +92,7 @@ public class ChangeAccountStatusCommandHandlerTests
         // Arrange
         var account = Entities.Account.Create("Test", "12345678909", "test@example.com", "11999999999");
         if (currentlyDeactivated)
-            account.EnableDisable(); // set DeactivatedUtc
+            account.EnableDisable();
 
         var repoMock = new Mock<IAccountRepository>();
         repoMock
@@ -107,12 +107,14 @@ public class ChangeAccountStatusCommandHandlerTests
 
         var before = account.DeactivatedUtc;
 
-        // Act
-        await handler.Handle(command, CancellationToken.None);
-
-        // Assert no change and ConfirmModelChanges called once
+        // Act 
+        var result = await handler.Handle(command, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypeEnum.Conflict, result.ErrorType);
+        Assert.Equal(string.Format(ErrorMessageConstants.InvalidOperationForEntity, nameof(Entities.Account)), result.Errors.FirstOrDefault());
         Assert.Equal(before, account.DeactivatedUtc);
-        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Once);
+        repoMock.Verify(r => r.ConfirmModelChanges(It.IsAny<CancellationToken>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
