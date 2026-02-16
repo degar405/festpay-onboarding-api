@@ -17,6 +17,12 @@ public class TransactionEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces<Guid>(StatusCodes.Status201Created)
+        .Produces<ErrorResponseModel>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResponseModel>(StatusCodes.Status404NotFound)
+        .Produces<ErrorResponseModel>(StatusCodes.Status409Conflict)
+        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Transaction);
 
         app.MapPatch($"{EndpointConstants.V1}{EndpointConstants.Transaction}/{{id:guid}}/cancel",
@@ -27,6 +33,11 @@ public class TransactionEndpoints : ICarterModule
                 return result.ToHttpResult(context.Request.Method);
             }
         )
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResponseModel>(StatusCodes.Status404NotFound)
+        .Produces<ErrorResponseModel>(StatusCodes.Status409Conflict)
+        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
+        .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Transaction);
 
         app.MapGet($"{EndpointConstants.V1}{EndpointConstants.Transaction}",

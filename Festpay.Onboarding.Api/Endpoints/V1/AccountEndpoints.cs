@@ -18,8 +18,8 @@ public class AccountEndpoints : ICarterModule
             }
         )
         .Produces<Guid>(StatusCodes.Status201Created)
-        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
         .Produces<ErrorResponseModel>(StatusCodes.Status409Conflict)
+        .Produces<ErrorResponseModel>(StatusCodes.Status422UnprocessableEntity)
         .Produces<ErrorResponseModel>(StatusCodes.Status500InternalServerError)
         .WithTags(SwaggerTagsConstants.Account);
 
