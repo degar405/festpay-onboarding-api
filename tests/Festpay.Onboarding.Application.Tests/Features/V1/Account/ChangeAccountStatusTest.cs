@@ -1,5 +1,4 @@
 using Festpay.Onboarding.Application.Common.Constants;
-using Festpay.Onboarding.Application.Common.Exceptions;
 using Festpay.Onboarding.Application.Common.Results;
 using Festpay.Onboarding.Application.Features.V1.Account.Commands;
 using Festpay.Onboarding.Application.Interfaces.IRepositories;

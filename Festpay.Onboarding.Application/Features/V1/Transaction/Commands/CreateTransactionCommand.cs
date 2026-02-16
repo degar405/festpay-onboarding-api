@@ -61,7 +61,6 @@ public sealed class CreateTransactionCommandHandler(ITransactionRepository repos
         sourceAccount.AfectBalance(-1 * transaction.Value);
         destinationAccount.AfectBalance(transaction.Value);
 
-        var result = await repository.CreateTransaction(transaction, cancellationToken);
-        return Result<Guid>.Ok(result);
+        return await repository.CreateTransaction(transaction, cancellationToken);
     }
 }

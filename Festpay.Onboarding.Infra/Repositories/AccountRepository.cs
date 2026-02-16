@@ -18,9 +18,9 @@ namespace Festpay.Onboarding.Infra.Repositories
 
         public async Task<Result<Guid>> CreateAccount(Account account, CancellationToken cancellationToken)
         {
+            await _context.Accounts.AddAsync(account, cancellationToken);
             try 
             { 
-                await _context.Accounts.AddAsync(account, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
